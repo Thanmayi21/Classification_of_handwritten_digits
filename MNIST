@@ -1,0 +1,97 @@
+import tensorflow as tf
+
+#loading the data
+(x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
+
+#no of values, size of matrix
+x_train.shape, y_train.shape, x_test.shape, y_test.shape
+
+#values present in x_train
+x_train
+
+import matplotlib.pyplot as plt
+
+def plot_input_img(i):
+    plt.imshow(x_train[i], cmap = 'binary')
+    plt.title(y_train[i])
+    plt.show()
+
+#to display images in range of 10
+for i in range(10):
+    plot_input_img(i)
+
+#image at x_train[0]
+x_train[0]
+plt.imshow(x_train[0],cmap='binary')
+plt.show()
+
+#brightness of the above image (between 0 and 255)
+x_train[0]
+
+#to check the length,
+len(x_train[0])
+
+#to check y_train,
+y_train
+
+#to check how many number of times, a value is repeated,
+y_train
+import numpy as np
+np.unique(y_train,return_counts=True)
+
+#Scaling/Normalization (divide the image data by 255 to normalize and make it grayscale)
+#maximum brightness in x_train[0]
+x_train[0].max()
+
+#minimum brightness in x_train[0]
+x_train[0].min()
+#Normalization - to get values in the required range (between 0 and 1)
+x_train = x_train/255
+x_test = x_test/255
+
+#defining the neural network architecture
+#imput (28*28=784 neurons)
+#hidden (1568 neurons by trial and error method)
+#output (10 neurons)
+model = tf.keras.Sequential()
+#Input Layer - no activation function
+model.add(tf.keras.layers.Flatten(input_shape = x_train[0].shape))
+#Hidden Layer - 'reLU' activation function
+model.add(tf.keras.layers.Dense(1568,activation = 'relu'))
+#Output Layer - Classification (Multiclass)
+model.add(tf.keras.layers.Dense(10,activation = 'softmax'))
+
+#Summary of the model
+model.summary()
+model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+model.fit(x_train,y_train,epochs=50)
+
+#To check the loss
+import pandas as pd
+loss = pd.DataFrame(model.history.history['loss']).plot()
+
+#To check the accuracy
+import pandas as pd
+accuracy = pd.DataFrame(model.history.history['accuracy']).plot()
+
+#Evaluating test data
+import numpy as np
+#model.predict - the probability of classes
+y_pred = model.predict(x_test)
+y_pred
+
+y_pred = np.argmax(y_pred,axis=1)
+y_pred
+
+#predicted outcomes
+np.unique(y_pred,return_counts=True)
+
+y_test
+#actual outcomes
+np.unique(y_test,return_counts=True)
+
+from sklearn.metrics import accuracy_score
+accuracy_score(y_test,y_pred)
+
+#saving the model weights to reuse elsewhere to directly predict the output nexttime
+model.save('mnist.hdf5')
